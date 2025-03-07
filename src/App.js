@@ -90,27 +90,6 @@ function App() {
                 <span className="icon-circle"><FaExclamation /></span> Received
               </h4>
             </div>
-            <div className="icon-bar">
-              <button className="btn btn-transparent settings-icon">
-                <FaCogs />
-              </button>
-              <button className="btn btn-transparent compile-icon">
-                <i className="fas fa-bolt icon-yellow"></i>
-              </button>
-              <button className="btn btn-transparent close-icon">
-                <FaTimesCircle />
-              </button>
-              <button className="btn btn-transparent database-icon" onClick={toggleDatabase}>
-                <FaDatabase />
-                {isDatabaseOpen ? <FaChevronUp /> : <FaChevronDown />}
-              </button>
-              <button className="btn btn-transparent loading-icon">
-                <FaSpinner />
-              </button>
-              <button className="btn btn-transparent grid-icon">
-                <FaThLarge />
-              </button>
-            </div>
             <div className="icon-table">
               <button className="btn btn-transparent settings-icon">
                 <FaCogs />
