@@ -1,10 +1,12 @@
 import React, { useState } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { Tabs, Tab } from "react-bootstrap";
+import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
+
 import {
   FaFolder,
-  FaChevronLeft,
-  FaChevronRight,
+  FaChevronUp,
+  FaChevronDown,
   FaSearch,
   FaDownload,
   FaExclamationTriangle,
@@ -18,6 +20,7 @@ function App() {
   const [searchTerm, setSearchTerm] = useState(""); // Search input state
   const [startDate, setStartDate] = useState(""); // Start date state
   const [endDate, setEndDate] = useState(""); // End date state
+  const [isInboutOpen, setIsInboutOpen] = useState(true); // Inbout section toggle
 
   // Filtered menu items based on search
   const filteredMenuItems = [
@@ -28,9 +31,9 @@ function App() {
     item.label.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  // Inbox menu toggle handler
+  // Inbout menu toggle handler
   const toggleMenu = () => {
-    setIsOpen(!isOpen);
+    setIsInboutOpen(!isInboutOpen);
   };
 
   // Sidebar toggle handler
@@ -47,7 +50,7 @@ function App() {
       <header className="bg-dark text-white py-3" style={{ backgroundColor: darkBlue }}>
         <nav className="container d-flex justify-content-between align-items-center">
           <h1 className="h5 m-0">React App Interface</h1>
-          <ul className="nav">
+          <ul className="nav" style={{ marginTop: "-10px" }}>
             <li className="nav-item">
               <button className="btn btn-outline-light">Documents</button>
             </li>
@@ -89,17 +92,42 @@ function App() {
           </div>
 
           {/* Inbout Toggle */}
-          <button
-            className="btn btn-light w-100 mb-3 d-flex align-items-center justify-content-between"
-            onClick={toggleMenu}
-            aria-expanded={isOpen}
-          >
-            <span className={`${isSidebarOpen ? "" : "d-none"}`}>Inbout</span>
-            <FaFolder />
-          </button>
+          <div className="position-relative w-100 mb-3">
+            {/* Icône en arrière-plan */}
+            <FaFolder
+              className="position-absolute"
+              style={{
+                left: "50%",
+                top: "50%",
+                transform: "translate(-50%, -50%)",
+                fontSize: "2rem",
+                color: "#aaa", // Couleur plus claire
+                zIndex: -1, // Derrière le bouton
+              }}
+            />
+            <button
+              className="btn btn-light d-flex align-items-center justify-content-start"
+              onClick={toggleMenu}
+              aria-expanded={isInboutOpen}
+              style={{
+                width: "auto", // La largeur s'ajuste automatiquement
+                padding: "0.3rem 0.8rem", // Ajuste le padding pour rendre le bouton plus compact
+              }}
+            >
+              {/* Icône de Inbout avant le texte */}
+              <FaFolder className={`${isSidebarOpen ? "" : "d-none"}`} style={{ marginRight: "0" }} />
+              <span className={`${isSidebarOpen ? "" : "d-none"}`} style={{ marginLeft: "5px" }}>
+                Inbout
+              </span>
+              <span>
+                {isInboutOpen ? <FaChevronDown /> : <FaChevronUp />}
+              </span>
+
+            </button>
+          </div>
 
           {/* Menu Items */}
-          {isOpen && (
+          {isInboutOpen && (
             <ul className="list-unstyled">
               {filteredMenuItems.length > 0 ? (
                 filteredMenuItems.map((item) => (
@@ -136,31 +164,30 @@ function App() {
         {/* MAIN AREA */}
         <main className="flex-grow-1 p-4">
           {/* Période de début et fin */}
-          <div className="d-flex justify-content-end mb-2"> {/* Change mb-4 to mb-2 */}
-            <form className="border p-3 rounded" style={{ width: "400px"  }}>
-              {/* Titre du tableau */}
-              <h5 className="mb-3" style={{ fontSize: "18px" }}>Définir période</h5>
-
-              {/* Période de début et de fin */}
+          <div className="d-flex justify-content-end mb-2">
+            <form className="border p-2 rounded" style={{ width: "300px", height: "80px" }}>
+              <h6 className="mb-1" style={{ fontSize: "14px" }}>Définir période</h6>
               <div className="d-flex justify-content-between">
-                <div className="mb-3" style={{ width: "48%" }}>
-                  <label htmlFor="startDate" className="form-label" style={{ fontSize: "14px" }}>Début</label>
+                <div className="mb-1" style={{ width: "48%" }}>
+                  <label htmlFor="startDate" className="form-label d-block mb-0" style={{ fontSize: "12px" }}>Début</label>
                   <input
                     type="date"
                     className="form-control form-control-sm"
                     id="startDate"
                     value={startDate}
                     onChange={(e) => setStartDate(e.target.value)}
+                    style={{ height: "25px", fontSize: "12px" }} 
                   />
                 </div>
-                <div className="mb-3" style={{ width: "48%" }}>
-                  <label htmlFor="endDate" className="form-label" style={{ fontSize: "14px" }}>Fin</label>
+                <div className="mb-1" style={{ width: "48%" }}>
+                  <label htmlFor="endDate" className="form-label d-block mb-0" style={{ fontSize: "12px" }}>Fin</label>
                   <input
                     type="date"
                     className="form-control form-control-sm"
                     id="endDate"
                     value={endDate}
                     onChange={(e) => setEndDate(e.target.value)}
+                    style={{ height: "25px", fontSize: "12px" }} 
                   />
                 </div>
               </div>
@@ -169,9 +196,9 @@ function App() {
 
           {/* Tabs */}
           {activeTab && (
-            <Tabs activeKey={activeTab} onSelect={(k) => setActiveTab(k)} className="mb-4">
+            <Tabs activeKey={activeTab} onSelect={(k) => setActiveTab(k)} className="mb-4" style={{ marginTop: "-45px" }}>
               <Tab eventKey="download" title={<><FaDownload /> Download</>}>
-                <div className="text-center py-5">
+                <div className="text-center py-5 " style={{ marginTop: "-10px" }}>
                   <p>Download your files here ⬇️</p>
                 </div>
               </Tab>
