@@ -5,6 +5,7 @@
   --white: #ffffff; /* Blanc */
   --hover-blue: #2a3d54; /* Bleu plus clair au survol */
   --border-light: rgba(255, 255, 255, 0.2); /* Bordures légères */
+  --ma-couleur: rgb(45, 64, 79); /* Couleur que vous avez spécifiée */
 }
 
 /* Appliquer le bleu nuit partout */
@@ -17,7 +18,7 @@ body {
 
 /* HEADER */
 header {
-  background-color: var(--dark-blue); /* Appliquer la couleur de fond */
+  background-color: var(--ma-couleur); /* Changer la couleur de fond en bleu */
   color: var(--white);
   padding: 10px;
   display: flex;
@@ -31,7 +32,7 @@ header h1 {
 
 /* SIDEBAR */
 aside {
-  background-color: var(--dark-blue);
+  background-color: var(--ma-couleur); /* Changer la couleur de fond en bleu */
   color: var(--white);
   padding: 1rem;
   transition: width 0.3s ease;
@@ -41,7 +42,7 @@ aside {
 }
 
 aside button {
-  background-color: var(--dark-blue);
+  background-color: var(--ma-couleur);
   color: var(--white);
   border: 1px solid var(--border-light);
   transition: background-color 0.3s ease;
@@ -50,7 +51,7 @@ aside button {
 }
 
 aside button:hover {
-  background-color: var(--hover-blue);
+  background-color: var(--dark-blue);
 }
 
 /* MENU */
@@ -72,12 +73,12 @@ ul.list-unstyled li button {
 }
 
 ul.list-unstyled li button:hover {
-  background-color: var(--hover-blue);
+  background-color: var(--dark-blue);
 }
 
 /* FOOTER */
 footer {
-  background-color: var(--dark-blue);
+  background-color: var(--ma-couleur); /* Changer la couleur de fond en bleu */
   color: var(--white);
   padding: 10px;
   text-align: center;
@@ -88,7 +89,7 @@ footer {
 
 /* Bouton de recherche */
 input.form-control {
-  background-color: var(--hover-blue);
+  background-color: var(--ma-couleur);
   border: 1px solid var(--white);
   color: var(--white);
   padding: 10px;
@@ -117,7 +118,7 @@ button.btn-outline-light {
 }
 
 button.btn-outline-light:hover {
-  background-color: var(--hover-blue);
+  background-color: var(--dark-blue);
 }
 
 /* Icônes */
@@ -126,7 +127,7 @@ button.btn-outline-light svg {
 }
 
 button.btn-outline-light:hover svg {
-  color: var(--hover-blue);
+  color: var(--dark-blue);
 }
 
 .menu-scroll::-webkit-scrollbar-thumb {
