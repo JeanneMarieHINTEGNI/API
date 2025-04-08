@@ -1,237 +1,330 @@
 import React, { useState } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { Tabs, Tab } from "react-bootstrap";
-import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
-
 import {
-  FaFolder,
-  FaChevronUp,
-  FaChevronDown,
-  FaSearch,
-  FaDownload,
-  FaExclamationTriangle,
-  FaArrowsAlt,
+    FaFolder,
+    FaChevronLeft,
+    FaChevronRight,
+    FaSearch,
+    FaDownload,
+    FaExclamationTriangle,
+    FaArrowsAlt,
 } from "react-icons/fa";
+import axios from "axios";
 
 function App() {
-  const [isOpen, setIsOpen] = useState(false); // Inbox menu toggle
-  const [activeTab, setActiveTab] = useState(""); // Active tab state
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true); // Sidebar toggle
-  const [searchTerm, setSearchTerm] = useState(""); // Search input state
-  const [startDate, setStartDate] = useState(""); // Start date state
-  const [endDate, setEndDate] = useState(""); // End date state
-  const [isInboutOpen, setIsInboutOpen] = useState(true); // Inbout section toggle
+    const [isOpen, setIsOpen] = useState(false);
+    const [activeTab, setActiveTab] = useState("");
+    const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+    const [searchTerm, setSearchTerm] = useState("");
+    const [startDate, setStartDate] = useState("");
+    const [endDate, setEndDate] = useState("");
+    const [apiData, setApiData] = useState(null);
+    const [partenaire, setPartenaire] = useState(1);
 
-  // Filtered menu items based on search
-  const filteredMenuItems = [
-    { id: "download", label: "Download ⬇️", icon: <FaDownload /> },
-    { id: "verification-error", label: "Verification Error ⚠️", icon: <FaExclamationTriangle /> },
-    { id: "move", label: "Déplacer ➡️", icon: <FaArrowsAlt /> },
-  ].filter((item) =>
-    item.label.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+    const API_BASE_URL = ""; // Ajoute l'URL de ton API ici
 
-  // Inbout menu toggle handler
-  const toggleMenu = () => {
-    setIsInboutOpen(!isInboutOpen);
+    const filteredMenuItems = [
+        { id: "download", label: "Download ⬇", icon: <FaDownload /> },
+        { id: "verification-error", label: "Verification Error ⚠", icon: <FaExclamationTriangle /> },
+        { id: "move", label: "Déplacer ➡", icon: <FaArrowsAlt /> },
+    ].filter((item) => item.label.toLowerCase().includes(searchTerm.toLowerCase()));
+
+    const toggleMenu = () => {
+        setIsOpen(!isOpen);
+    };
+
+    const toggleSidebar = () => {
+        setIsSidebarOpen(!isSidebarOpen);
+    };
+
+    const fetchData = async (etat) => {
+      try {
+          const dataToSend = {
+              procedureName: "dbo.PS_SELECT_AFFICHE_GRILLE_INBOUND_OUTBOUND_UN_ETAT",
+              parameters: {
+                  P_PARTENAIRE: parseInt(partenaire, 10),
+                  P_ETAT: etat,
+                  P_DATE_DEBUT: startDate,
+                  P_DATE_FIN: endDate,
+                  TraceErrorLigne: "some_value_here",
+                  RETURN_VALUE: 1,
+              },
+              RecordsetType: 3,
+              EnableRecordsetType: true,
+              request: "requiredRequestValue",
+          };
+  
+          console.log("Données envoyées à l'API :", dataToSend);
+  
+          const response = await axios.post(`${API_BASE_URL}/executeProcedure`, dataToSend);
+          const resultData = JSON.parse(response.data.result);
+          setApiData(resultData);
+          console.log("Données reçues de l'API:", resultData);
+      } catch (error) {
+          console.error("Erreur lors de la récupération des données :", error);
+      }
   };
+  
 
-  // Sidebar toggle handler
-  const toggleSidebar = () => {
-    setIsSidebarOpen(!isSidebarOpen);
-  };
+    const darkBlue = "#2c3e50";
 
-  // Define the dark blue color
-  const darkBlue = "#2c3e50";
+    return (
+        <div className="d-flex vh-100 flex-column">
+            <header className="bg-dark text-white py-3" style={{ backgroundColor: darkBlue }}>
+                <nav className="container d-flex justify-content-between align-items-center">
+                    <h1 className="h5 m-0">React App Interface</h1>
+                    <ul className="nav">
+                        <li className="nav-item">
+                            <button className="btn btn-outline-light">Documents</button>
+                        </li>
+                    </ul>
+                </nav>
+            </header>
 
-  return (
-    <div className="d-flex vh-100 flex-column">
-      {/* HEADER */}
-      <header className="bg-dark text-white py-3" style={{ backgroundColor: darkBlue }}>
-        <nav className="container d-flex justify-content-between align-items-center">
-          <h1 className="h5 m-0">React App Interface</h1>
-          <ul className="nav" style={{ marginTop: "-10px" }}>
-            <li className="nav-item">
-              <button className="btn btn-outline-light">Documents</button>
-            </li>
-          </ul>
-        </nav>
-      </header>
+            <div className="d-flex flex-grow-1">
+                <aside
+      className={`bg-secondary text-white d-flex flex-column position-relative`}
+      style={{
+        width: isSidebarOpen ? "250px" : "80px",
+        transition: "width 0.3s",
+        padding: isSidebarOpen ? "1rem" : "0.5rem",
+        backgroundColor: darkBlue,
+      }}
+    >
+      <h1
+        className={`h6 mb-4 ${isSidebarOpen ? "" : "d-none"}`}
+        style={{ color: "white" }}
+      >
+        Menu
+      </h1>
 
-      {/* MAIN CONTENT */}
-      <div className="d-flex flex-grow-1">
-        {/* SIDEBAR */}
-        <aside
-          className={`bg-secondary text-white d-flex flex-column position-relative`}
-          style={{
-            width: isSidebarOpen ? "250px" : "80px",
-            transition: "width 0.3s",
-            padding: isSidebarOpen ? "1rem" : "0.5rem",
-            backgroundColor: darkBlue,
-          }}
-        >
-          <h1 className={`h6 mb-4 ${isSidebarOpen ? "" : "d-none"}`} style={{ color: "white" }}>
-            Menu
-          </h1>
-
-          {/* Search input */}
-          <div className="mb-3">
-            <div className="input-group">
-              <input
-                type="text"
-                className={`form-control ${isSidebarOpen ? "" : "d-none"}`}
-                placeholder="Search..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                aria-label="Search menu items"
-              />
-              <button className="btn btn-light">
-                <FaSearch />
-              </button>
-            </div>
-          </div>
-
-          {/* Inbout Toggle */}
-          <div className="position-relative w-100 mb-3">
-            {/* Icône en arrière-plan */}
-            <FaFolder
-              className="position-absolute"
-              style={{
-                left: "50%",
-                top: "50%",
-                transform: "translate(-50%, -50%)",
-                fontSize: "2rem",
-                color: "#aaa", // Couleur plus claire
-                zIndex: -1, // Derrière le bouton
-              }}
-            />
-            <button
-              className="btn btn-light d-flex align-items-center justify-content-start"
-              onClick={toggleMenu}
-              aria-expanded={isInboutOpen}
-              style={{
-                width: "auto", // La largeur s'ajuste automatiquement
-                padding: "0.3rem 0.8rem", // Ajuste le padding pour rendre le bouton plus compact
-              }}
-            >
-              {/* Icône de Inbout avant le texte */}
-              <FaFolder className={`${isSidebarOpen ? "" : "d-none"}`} style={{ marginRight: "0" }} />
-              <span className={`${isSidebarOpen ? "" : "d-none"}`} style={{ marginLeft: "5px" }}>
-                Inbout
-              </span>
-              <span>
-                {isInboutOpen ? <FaChevronDown /> : <FaChevronUp />}
-              </span>
-
-            </button>
-          </div>
-
-          {/* Menu Items */}
-          {isInboutOpen && (
-            <ul className="list-unstyled">
-              {filteredMenuItems.length > 0 ? (
-                filteredMenuItems.map((item) => (
-                  <li key={item.id} className="mb-2">
-                    <button
-                      className={`btn btn-sm w-100 text-start d-flex align-items-center ${
-                        activeTab === item.id ? "btn-primary" : "btn-outline-light"
-                      }`}
-                      onClick={() => setActiveTab(item.id)}
-                    >
-                      {item.icon} <span className={isSidebarOpen ? "ms-2" : "d-none"}>{item.label}</span>
-                    </button>
-                  </li>
-                ))
-              ) : (
-                <li className="text-center">No results found 😞</li>
-              )}
-            </ul>
-          )}
-
-          {/* Sidebar Toggle Button (Fixé en bas à droite) */}
-          <button
-            className="btn btn-outline-light position-absolute"
-            onClick={toggleSidebar}
-            style={{
-              bottom: "1rem",
-              right: "1rem",
-            }}
-          >
-            {isSidebarOpen ? <FaChevronLeft /> : <FaChevronRight />}
+      <div className="mb-3">
+        <div className="input-group">
+          <input
+            type="text"
+            className={`form-control ${isSidebarOpen ? "" : "d-none"}`}
+            placeholder="Search..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            aria-label="Search menu items"
+          />
+          <button className="btn btn-light">
+            <FaSearch />
           </button>
-        </aside>
-
-        {/* MAIN AREA */}
-        <main className="flex-grow-1 p-4">
-          {/* Période de début et fin */}
-          <div className="d-flex justify-content-end mb-2">
-            <form className="border p-2 rounded" style={{ width: "300px", height: "80px" }}>
-              <h6 className="mb-1" style={{ fontSize: "14px" }}>Définir période</h6>
-              <div className="d-flex justify-content-between">
-                <div className="mb-1" style={{ width: "48%" }}>
-                  <label htmlFor="startDate" className="form-label d-block mb-0" style={{ fontSize: "12px" }}>Début</label>
-                  <input
-                    type="date"
-                    className="form-control form-control-sm"
-                    id="startDate"
-                    value={startDate}
-                    onChange={(e) => setStartDate(e.target.value)}
-                    style={{ height: "25px", fontSize: "12px" }} 
-                  />
-                </div>
-                <div className="mb-1" style={{ width: "48%" }}>
-                  <label htmlFor="endDate" className="form-label d-block mb-0" style={{ fontSize: "12px" }}>Fin</label>
-                  <input
-                    type="date"
-                    className="form-control form-control-sm"
-                    id="endDate"
-                    value={endDate}
-                    onChange={(e) => setEndDate(e.target.value)}
-                    style={{ height: "25px", fontSize: "12px" }} 
-                  />
-                </div>
-              </div>
-            </form>
-          </div>
-
-          {/* Tabs */}
-          {activeTab && (
-            <Tabs activeKey={activeTab} onSelect={(k) => setActiveTab(k)} className="mb-4" style={{ marginTop: "-45px" }}>
-              <Tab eventKey="download" title={<><FaDownload /> Download</>}>
-                <div className="text-center py-5 " style={{ marginTop: "-10px" }}>
-                  <p>Download your files here ⬇️</p>
-                </div>
-              </Tab>
-
-              <Tab eventKey="verification-error" title={<><FaExclamationTriangle /> Verification Error</>}>
-                <div className="text-center py-5">
-                  <p>Details about verification errors ⚠️</p>
-                </div>
-              </Tab>
-
-              <Tab eventKey="move" title={<><FaArrowsAlt /> Déplacer</>}>
-                <div className="text-center py-5">
-                  <p>You can move your files here ➡️</p>
-                </div>
-              </Tab>
-            </Tabs>
-          )}
-
-          {/* Default Content */}
-          {!activeTab && (
-            <div className="text-center text-secondary">
-              <p>Select a tab to view its content</p>
-            </div>
-          )}
-        </main>
+        </div>
       </div>
 
-      {/* FOOTER */}
-      <footer className="bg-dark text-white text-center py-2" style={{ backgroundColor: darkBlue }}>
-        <small>© 2025 - Thank you for visiting our page!</small>
-      </footer>
-    </div>
-  );
+      <button
+        className="btn btn-light w-100 mb-3 d-flex align-items-center justify-content-between"
+        onClick={toggleMenu}
+        aria-expanded={isOpen}
+      >
+        <span className={`${isSidebarOpen ? "" : "d-none"}`}>Inbound</span>
+        <FaFolder />
+      </button>
+
+      {isOpen && (
+        <ul className="list-unstyled">
+          {filteredMenuItems.length > 0 ? (
+            filteredMenuItems.map((item) => (
+              <li key={item.id} className="mb-2">
+                <button
+                  className={`btn btn-sm w-100 text-start d-flex align-items-center ${activeTab === item.id ? "btn-primary" : "btn-outline-light"}`}
+                  onClick={() => {
+                    setActiveTab(item.id);
+                    fetchData(
+                      item.id === "download"
+                        ? 1
+                        : item.id === "verification-error"
+                        ? 2
+                        : 3
+                    );
+                  }}
+                >
+                  {item.icon} <span className={`${isSidebarOpen ? "ms-2" : "d-none"}`}>{item.label}</span>
+                </button>
+              </li>
+            ))
+          ) : (
+            <li className="text-center">No results found</li>
+          )}
+        </ul>
+      )}
+
+      <button
+        className="btn btn-outline-light position-absolute"
+        onClick={toggleSidebar}
+        style={{
+          bottom: "1rem",
+          right: "1rem",
+        }}
+      >
+        {isSidebarOpen ? <FaChevronLeft /> : <FaChevronRight />}
+      </button>
+    </aside>
+
+                <main className="flex-grow-1 p-4">
+                    <div className="d-flex justify-content-end mb-2">
+                        <form className="border p-3 rounded" style={{ width: "400px" }}>
+                            <h5 className="mb-3" style={{ fontSize: "18px" }}>
+                                Définir période
+                            </h5>
+
+                            <div className="d-flex justify-content-between">
+                                <div className="mb-3" style={{ width: "48%" }}>
+                                    <label htmlFor="startDate" className="form-label" style={{ fontSize: "14px" }}>
+                                        Début
+                                    </label>
+                                    <input
+                                        type="date"
+                                        className="form-control form-control-sm"
+                                        id="startDate"
+                                        value={startDate}
+                                        onChange={(e) => setStartDate(e.target.value)}
+                                    />
+                                </div>
+                                <div className="mb-3" style={{ width: "48%" }}>
+                                    <label htmlFor="endDate" className="form-label" style={{ fontSize: "14px" }}>
+                                        Fin
+                                    </label>
+                                    <input
+                                        type="date"
+                                        className="form-control form-control-sm"
+                                        id="endDate"
+                                        value={endDate}
+                                        onChange={(e) => setEndDate(e.target.value)}
+                                    />
+                                </div>
+                            </div>
+                            <div className="mb-3">
+                                <label htmlFor="partenaire" className="form-label" style={{ fontSize: "14px" }}>
+                                    Partenaire
+                                </label>
+                                <input
+                                    type="number"
+                                    className="form-control form-control-sm"
+                                    id="partenaire"
+                                    value={partenaire}
+                                    onChange={(e) => setPartenaire(e.target.value)}
+                                />
+                            </div>
+                        </form>
+                    </div>
+
+                    {activeTab && (
+                        <Tabs activeKey={activeTab} onSelect={(k) => setActiveTab(k)} className="mb-4">
+                            <Tab eventKey="download" title={<><FaDownload /> Download</>}>
+                                <div className="text-center py-5">
+                                    
+                                    {apiData && apiData[0] && apiData[0].Headers ? (
+                                        <table className="table table-striped">
+                                            <thead>
+                                                <tr>
+                                                    {apiData[0].Headers.map((header, index) => (
+                                                        <th key={index}>{header}</th>
+                                                    ))}
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {apiData[0].Data.length > 0 ? (
+                                                    apiData[0].Data.map((row, index) => (
+                                                        <tr key={index}>
+                                                            {Object.values(row).map((value, colIndex) => (
+                                                                <td key={colIndex}>{value}</td>
+                                                            ))}
+                                                        </tr>
+                                                    ))
+                                                ) : (
+                                                    <tr>
+                                                        <td colSpan={apiData[0].Headers.length}>Aucune donnée disponible</td>
+                                                    </tr>
+                                                )}
+                                            </tbody>
+                                        </table>
+                                    ) : (
+                                        <p>Aucune donnée disponible</p>
+                                    )}
+                                </div>
+                            </Tab>
+
+                            <Tab eventKey="verification-error" title={<><FaExclamationTriangle />Error Verification</>}>
+                                <div className="text-center py-5">
+                                    
+                                    {apiData && apiData[0] && apiData[0].Headers ? (
+                                        <table className="table table-striped">
+                                            <thead>
+                                                <tr>
+                                                    {apiData[0].Headers.map((header, index) => (
+                                                        <th key={index}>{header}</th>
+                                                    ))}
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {apiData[0].Data.map((row, index) => (
+                                                    <tr key={index}>
+                                                        {Object.values(row).map((value, colIndex) => (
+                                                            <td key={colIndex}>{value}</td>
+                                                        ))}
+                                                    </tr>
+                                                ))}
+                                            </tbody>
+                                        </table>
+                                    ) : (
+                                        <p>Aucune donnée disponible</p>
+                                    )}
+                                </div>
+                            </Tab>
+
+                            <Tab eventKey="move" title={<><FaArrowsAlt /> Moved</>}>
+                                <div className="text-center py-5">
+                                    
+                                    {apiData && apiData[0] && apiData[0].Headers ? (
+                                        <table className="table table-striped table-bordered">
+                                            <thead>
+                                                <tr>
+                                                    {apiData[0].Headers.map((header, index) => (
+                                                        <th key={index}>{header}</th>
+                                                    ))}
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {apiData[0].Data && apiData[0].Data.length > 0 ? (
+                                                    apiData[0].Data.map((row, index) => (
+                                                        <tr key={index}>
+                                                            {apiData[0].Headers.map((header, colIndex) => (
+                                                                <td key={colIndex}>{row[header] || ''}</td> 
+                                                            ))}
+                                                        </tr>
+                                                    ))
+                                                ) : (
+                                                    <tr>
+                                                        <td colSpan={apiData[0].Headers.length}>Aucune donnée disponible</td>
+                                                    </tr>
+                                                )}
+                                            </tbody>
+                                        </table>
+                                    ) : (
+                                        <p>Aucune donnée disponible</p>
+                                    )}
+                                </div>
+                            </Tab>
+                        </Tabs>
+                    )}
+
+                    {!activeTab && (
+                        <div className="text-center text-secondary">
+                            <p>Select a tab to view its content</p>
+                        </div>
+                    )}
+                </main>
+            </div>
+
+            <footer className="bg-dark text-white text-center py-2" style={{ backgroundColor: darkBlue }}>
+                <small>© 2025 - Thank you for visiting our page!</small>
+            </footer>
+        </div>
+    );
 }
 
-export default App;
+export default App;
